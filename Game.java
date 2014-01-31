@@ -1,69 +1,54 @@
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.math.Vector3;
 
 public class Game implements ApplicationListener {
-    private Texture texture;
     private SpriteBatch batch;
-    private Sprite sprite;
     private com.badlogic.gdx.graphics.OrthographicCamera camera;
-    private Vector3 touchPos = new Vector3();
-    private float speed = 400;
+    private BitmapFont font;
+    private Mario mario;
+    private MarioController marioController;
 
     @Override
     public void create () {
         System.out.println("game created");
 
-        texture = new Texture(Gdx.files.internal("mario.png"));
         batch = new SpriteBatch();
-        sprite = new Sprite(texture, 0, 0, 256, 256);
-        sprite.setPosition(0, 0);
+
+        font = new BitmapFont();
+
         camera = new OrthographicCamera();
         camera.setToOrtho(false);
+
+        mario = new Mario("mario.png");
+        marioController = new MarioController(mario, camera);
+
+        Gdx.input.setInputProcessor(marioController);
     }
 
     private void clear() {
-        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClearColor(.2f, .6f, .8f, 1);
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
     }
 
     @Override
     public void render () {
+        marioController.update();
+
         clear();
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        sprite.draw(batch);
-        //sprite.setColor(1, 0, 1f, 1);
+        mario.draw(batch);
+        font.draw(batch, "Hello!", 10, 20);
         batch.end();
-
-        processInput();
-
     }
     
-    private void processInput() {
-        processTouch();
-        processKeys();
-    }
-    private void processTouch() {
-        if(Gdx.input.isTouched()) {
-            touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-            camera.unproject(touchPos);
-            sprite.setX(touchPos.x - 128);
-        }
-    }
-    private void processKeys() {
-        if(Gdx.input.isKeyPressed(Keys.LEFT)) 
-                sprite.setX(sprite.getX() - speed * Gdx.graphics.getDeltaTime());
-        if(Gdx.input.isKeyPressed(Keys.RIGHT)) 
-                sprite.setX(sprite.getX() + speed * Gdx.graphics.getDeltaTime());
-    }
 
     @Override
     public void resize (int width, int height) {
@@ -82,7 +67,7 @@ public class Game implements ApplicationListener {
 
     @Override
     public void dispose () {
-        texture.dispose();
+        mario.dispose();
         batch.dispose();
     }
 }
