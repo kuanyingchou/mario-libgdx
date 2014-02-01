@@ -6,29 +6,23 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class Game implements ApplicationListener {
-    private SpriteBatch batch;
-    private com.badlogic.gdx.graphics.OrthographicCamera camera;
-    private BitmapFont font;
     private Mario mario;
-    private MarioController marioController;
+    private Stage stage;
 
     @Override
     public void create () {
         System.out.println("game created");
-
-        batch = new SpriteBatch();
-
-        font = new BitmapFont();
-
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false);
-
         mario = new Mario("mario.png");
-        marioController = new MarioController(mario, camera);
 
-        Gdx.input.setInputProcessor(marioController);
+        stage = new Stage();
+        stage.addActor(mario);
+        stage.setKeyboardFocus(mario);
+
+        Gdx.input.setInputProcessor(stage);
     }
 
     private void clear() {
@@ -38,20 +32,15 @@ public class Game implements ApplicationListener {
 
     @Override
     public void render () {
-        marioController.update();
-
         clear();
-
-        batch.setProjectionMatrix(camera.combined);
-        batch.begin();
-        mario.draw(batch);
-        font.draw(batch, "Hello!", 10, 20);
-        batch.end();
+        stage.act(Gdx.graphics.getDeltaTime());
+        stage.draw();
     }
     
 
     @Override
     public void resize (int width, int height) {
+        stage.setViewport(width, height);
         System.out.println("game resized");
     }
 
@@ -67,7 +56,6 @@ public class Game implements ApplicationListener {
 
     @Override
     public void dispose () {
-        mario.dispose();
-        batch.dispose();
+        stage.dispose();
     }
 }
