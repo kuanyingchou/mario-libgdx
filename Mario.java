@@ -3,6 +3,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 
 class Mario extends Actor {
     private Sprite sprite;
@@ -12,9 +13,13 @@ class Mario extends Actor {
 
     public Mario(String img) {
         texture = new Texture(Gdx.files.internal(img));
+        texture.setFilter(
+                TextureFilter.Linear, 
+                TextureFilter.Linear);
         sprite = new Sprite(texture, 0, 0, 256, 256);
         sprite.setPosition(0, 0);
-        setBounds(0, 0, 256, 256);
+        sprite.setSize(1, 1);
+        //setBounds(0, 0, 256, 256);
 
         marioController = new MarioController(this);
         addListener(marioController);
@@ -28,6 +33,10 @@ class Mario extends Actor {
     }
     public void moveRight() {
         sprite.setX(sprite.getX() + speed * Gdx.graphics.getDeltaTime());
+    }
+
+    @Override public void setPosition(float x, float y) {
+        sprite.setPosition(x, y); //>>> remove it
     }
 
 
