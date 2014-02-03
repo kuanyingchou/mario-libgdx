@@ -27,6 +27,9 @@ class MarioController extends InputListener {
         case Keys.RIGHT:
             mario.moveRight();
             break;
+        case Keys.UP:
+            mario.jump();
+            break;
         }
     }
 

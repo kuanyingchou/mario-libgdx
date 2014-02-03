@@ -16,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 
 public class Game implements ApplicationListener {
     private Mario mario;
@@ -37,6 +38,13 @@ public class Game implements ApplicationListener {
         world = new World(new Vector2(0, -10), true);
         debugRenderer = new Box2DDebugRenderer();
 
+        createPlayer();
+        createPlatform();
+
+        Gdx.input.setInputProcessor(stage);
+    }
+
+    private void createPlayer() {
         final BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyType.DynamicBody;
         bodyDef.position.set(1, 2);
@@ -45,19 +53,27 @@ public class Game implements ApplicationListener {
         //] the link between scene2d and box2d
         final PolygonShape shape = new PolygonShape();
         shape.setAsBox(.5f, .5f);
-        marioBody.createFixture(shape, 1); 
-        shape.dispose();
 
+        final FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1;
+        fixtureDef.friction = 2f;
+        fixtureDef.restitution = .2f;
+
+        marioBody.createFixture(fixtureDef); 
+        shape.dispose();
+        mario.setBody(marioBody);
+    }
+
+    private void createPlatform() {
         final BodyDef platformDef = new BodyDef();
         platformDef.type = BodyType.StaticBody;
-        platformDef.position.set(0, 0);
+        platformDef.position.set(0, -.1f);
         final Body platformBody = world.createBody(platformDef);
         final PolygonShape platformShape = new PolygonShape();
-        platformShape.setAsBox(5, .1f);
+        platformShape.setAsBox(10, .1f);
         platformBody.createFixture(platformShape, 1);
         platformShape.dispose();
-
-        Gdx.input.setInputProcessor(stage);
     }
 
     private void clear() {
@@ -84,7 +100,7 @@ public class Game implements ApplicationListener {
     public void resize (int width, int height) {
         //stage.setViewport(width / 256f, height / 256f);
         //stage.setViewport(width, height);
-        stage.setViewport(2, 2);
+        stage.setViewport(10, 10);
         System.out.println("game resized");
     }
 
