@@ -57,7 +57,7 @@ public class Game implements ApplicationListener {
         final FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1;
-        fixtureDef.friction = 2f;
+        fixtureDef.friction = 3f;
         fixtureDef.restitution = .2f;
 
         marioBody.createFixture(fixtureDef); 

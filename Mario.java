@@ -36,19 +36,19 @@ class Mario extends Actor {
         //body.applyForceToCenter(-10, 0, true);
         final Vector2 vel = body.getLinearVelocity();
         final Vector2 pos = body.getPosition();
-        if(vel.x > -2) body.applyLinearImpulse(-.3f, 0, pos.x, pos.y, true);
+        if(vel.x > -2) body.applyLinearImpulse(-.5f, 0, pos.x, pos.y, true);
     }
     public void moveRight() {
         //sprite.setX(sprite.getX() + speed * Gdx.graphics.getDeltaTime());
         //body.applyForceToCenter(10, 0, true);
         final Vector2 vel = body.getLinearVelocity();
         final Vector2 pos = body.getPosition();
-        if(vel.x < 2 ) body.applyLinearImpulse(.3f, 0, pos.x, pos.y, true);
+        if(vel.x < 2 ) body.applyLinearImpulse(.5f, 0, pos.x, pos.y, true);
     }
     public void jump() {
         final Vector2 pos = body.getPosition();
         if(pos.y < .6f) {
-            body.applyLinearImpulse(0, 2f, pos.x, pos.y, true);
+            body.applyLinearImpulse(0, 5f, pos.x, pos.y, true);
         }
     }
     public void setBody(Body b) { body = b; }
