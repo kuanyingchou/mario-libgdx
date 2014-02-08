@@ -47,9 +47,9 @@ class Mario extends Actor {
     }
     public void jump() {
         final Vector2 pos = body.getPosition();
-        if(pos.y < .6f) {
+        //if(pos.y < .6f) {
             body.applyLinearImpulse(0, 5f, pos.x, pos.y, true);
-        }
+        //}
     }
     public void setBody(Body b) { body = b; }
     public Body getBody() { return body; }

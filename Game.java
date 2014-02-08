@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.math.MathUtils;
 
 public class Game implements ApplicationListener {
     private Mario mario;
@@ -40,6 +41,9 @@ public class Game implements ApplicationListener {
 
         createPlayer();
         createPlatform();
+        for(int i=0; i<10; i++) {
+            createBoxes();
+        }
 
         Gdx.input.setInputProcessor(stage);
     }
@@ -48,6 +52,7 @@ public class Game implements ApplicationListener {
         final BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyType.DynamicBody;
         bodyDef.position.set(1, 2);
+        bodyDef.fixedRotation = true;
         marioBody = world.createBody(bodyDef);
         marioBody.setUserData(mario); 
         //] the link between scene2d and box2d
@@ -57,12 +62,36 @@ public class Game implements ApplicationListener {
         final FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1;
-        fixtureDef.friction = 3f;
+        fixtureDef.friction = .5f;
         fixtureDef.restitution = .2f;
 
         marioBody.createFixture(fixtureDef); 
         shape.dispose();
         mario.setBody(marioBody);
+    }
+    private void createBoxes() {
+        float x = MathUtils.random(5);
+        float y = 10;
+
+
+        final BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyType.DynamicBody;
+        bodyDef.position.set(x, y);
+        bodyDef.angle = MathUtils.random(1.0f) * MathUtils.PI;
+        //bodyDef.fixedRotation = true;
+        Body box = world.createBody(bodyDef);
+
+        final PolygonShape shape = new PolygonShape();
+        shape.setAsBox(.5f, .5f);
+
+        final FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = .1f;
+        fixtureDef.friction = 3f;
+        fixtureDef.restitution = .2f;
+
+        box.createFixture(fixtureDef); 
+        shape.dispose();
     }
 
     private void createPlatform() {
@@ -92,7 +121,7 @@ public class Game implements ApplicationListener {
         mario.setPosition(
                 marioBody.getPosition().x - .5f, 
                 marioBody.getPosition().y - .5f);
-        System.out.println(">>> "+marioBody.getPosition());
+        //System.out.println(">>> "+marioBody.getPosition());
     }
     
 
