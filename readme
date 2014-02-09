@@ -1,1 +1,10 @@
-A simple game made with libgdx.
+# A simple game made with libgdx.
+## Todo
+
+- [box2d]sensors
+- [box2d]ray casts
+- multiple scenes
+- android
+- ios
+- spine animation
+- image sequence animation
