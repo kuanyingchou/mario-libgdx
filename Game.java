@@ -49,6 +49,7 @@ public class Game implements ApplicationListener {
         world.setContactListener(new MarioContactListener());
 
         Gdx.input.setInputProcessor(stage);
+
     }
 
     private void createPlayer() {

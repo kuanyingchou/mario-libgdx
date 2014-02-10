@@ -6,6 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.Audio;
+import com.badlogic.gdx.audio.Sound;
 
 class Mario extends Actor {
     private Sprite sprite;
@@ -13,6 +15,9 @@ class Mario extends Actor {
     private float speed = 400;
     private MarioController marioController;
     private Body body;
+    private Audio audio;
+    private Sound jumpSound;
+    private Sound hitSound;
 
     public Mario(String img) {
         texture = new Texture(Gdx.files.internal(img));
@@ -27,6 +32,9 @@ class Mario extends Actor {
         marioController = new MarioController(this);
         addListener(marioController);
         //addCaptureListener(marioController);
+        audio = Gdx.audio;
+        jumpSound = audio.newSound(Gdx.files.internal("jump.mp3"));
+        hitSound = audio.newSound(Gdx.files.internal("hit.mp3"));
     }    
     public void moveTo(float x) {
         sprite.setX(x);
@@ -50,6 +58,7 @@ class Mario extends Actor {
         //if(pos.y < .6f) {
             body.applyLinearImpulse(0, 5f, pos.x, pos.y, true);
         //}
+        jumpSound.play();
     }
     public void setBody(Body b) { body = b; }
     public Body getBody() { return body; }
@@ -69,7 +78,14 @@ class Mario extends Actor {
         marioController.update();
     }
 
+    public void hit() {
+        //System.out.println(speed);
+        hitSound.play();
+    }
+
     public void dispose() {
         texture.dispose();
+        jumpSound.dispose();
+        hitSound.dispose();
     }
 }
