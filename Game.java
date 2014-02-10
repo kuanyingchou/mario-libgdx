@@ -41,9 +41,12 @@ public class Game implements ApplicationListener {
 
         createPlayer();
         createPlatform();
-        for(int i=0; i<10; i++) {
-            createBoxes();
+        for(int i=0; i<50; i++) {
+            final Body b = createBoxes();
+            b.setUserData("box "+i);
         }
+
+        world.setContactListener(new MarioContactListener());
 
         Gdx.input.setInputProcessor(stage);
     }
@@ -65,11 +68,19 @@ public class Game implements ApplicationListener {
         fixtureDef.friction = .5f;
         fixtureDef.restitution = .2f;
 
+        final PolygonShape radarShape = new PolygonShape();
+        radarShape.setAsBox(1f, 1f);
+        final FixtureDef radarDef = new FixtureDef();
+        radarDef.shape = radarShape;
+        radarDef.isSensor = true;
+
         marioBody.createFixture(fixtureDef); 
+        marioBody.createFixture(radarDef); 
         shape.dispose();
+        radarShape.dispose();
         mario.setBody(marioBody);
     }
-    private void createBoxes() {
+    private Body createBoxes() {
         float x = MathUtils.random(5);
         float y = 10;
 
@@ -88,10 +99,12 @@ public class Game implements ApplicationListener {
         fixtureDef.shape = shape;
         fixtureDef.density = .1f;
         fixtureDef.friction = 3f;
-        fixtureDef.restitution = .2f;
+        fixtureDef.restitution = .1f;
 
         box.createFixture(fixtureDef); 
         shape.dispose();
+
+        return box;
     }
 
     private void createPlatform() {

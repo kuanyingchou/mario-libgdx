@@ -1,10 +1,17 @@
 # A simple game made with libgdx.
 ## Todo
 
-- [box2d]sensors
 - [box2d]ray casts
 - multiple scenes
 - android
 - ios
 - spine animation
 - image sequence animation
+
+# Done
+- box2d sensors
+- box2d
+- scene2d
+- input event pulling
+- input event handling
+- camera
