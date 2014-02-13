@@ -105,7 +105,7 @@ public class Game implements ApplicationListener {
         final BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyType.DynamicBody;
         bodyDef.position.set(1, 2);
-        bodyDef.fixedRotation = true;
+        //bodyDef.fixedRotation = true;
         marioBody = world.createBody(bodyDef);
         marioBody.setUserData(mario); 
         //] the link between scene2d and box2d
@@ -184,8 +184,8 @@ public class Game implements ApplicationListener {
         mario.setPosition(
                 marioBody.getPosition().x - .5f, 
                 marioBody.getPosition().y - .5f);
-
-        //System.out.println(">>> "+marioBody.getPosition());
+        mario.setRotation(marioBody.getTransform().getRotation() * MathUtils.radDeg);
+        //System.out.println(">>> "+mario.getRotation());
     }
     
 

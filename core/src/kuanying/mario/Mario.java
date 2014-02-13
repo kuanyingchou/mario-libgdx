@@ -1,6 +1,7 @@
 package kuanying.mario;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -17,25 +18,19 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-class Mario extends Actor {
-    private Sprite sprite;
-    private Texture texture;
-    private float speed = 400;
+class Mario extends Image {
     private Body body;
     private Sound jumpSound;
     private Sound hitSound;
     public int direction = 0;
 
     public Mario(String img) {
-        texture = new Texture(Gdx.files.internal(img));
-        texture.setFilter(
-                TextureFilter.Linear, 
-                TextureFilter.Linear);
-        sprite = new Sprite(texture, 0, 0, 256, 256);
-        sprite.setPosition(0, 0);
-        sprite.setSize(1, 1);
-        setSize(1, 1); //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> this line took me all day
+        super(new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(img)))));
+        setSize(1, 1); //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> this line took me all day while implementing gesture input
+        setOrigin(.5f, .5f);
         //setBounds(0, 0, 256, 256);
 
         addListener(new MarioController(this));
@@ -88,7 +83,7 @@ class Mario extends Actor {
     }
     */
     public void moveTo(float x) {
-        sprite.setX(x);
+        setX(x);
     }
     public void moveLeft() {
         //sprite.setX(sprite.getX() - speed * Gdx.graphics.getDeltaTime());
@@ -116,14 +111,15 @@ class Mario extends Actor {
 
     @Override public void setPosition(float x, float y) {
         super.setPosition(x, y);
-        sprite.setPosition(x, y); //>>> remove it
+        //sprite.setPosition(x, y); //>>> remove it
     }
 
+/*
     @Override
     public void draw(Batch batch, float parentAlpha) {
         sprite.draw(batch);
     }
-
+*/
     @Override 
     public void act(float deltaTime) {
         super.act(deltaTime);
@@ -148,7 +144,7 @@ class Mario extends Actor {
     }
 
     public void dispose() {
-        texture.dispose();
+        //texture.dispose();
         jumpSound.dispose();
         hitSound.dispose();
     }
