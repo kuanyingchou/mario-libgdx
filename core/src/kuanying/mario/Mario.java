@@ -1,3 +1,5 @@
+package kuanying.mario;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.Texture;
@@ -8,16 +10,22 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
+import com.badlogic.gdx.input.GestureDetector.GestureListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 
 class Mario extends Actor {
     private Sprite sprite;
     private Texture texture;
     private float speed = 400;
-    private MarioController marioController;
     private Body body;
-    private Audio audio;
     private Sound jumpSound;
     private Sound hitSound;
+    public int direction = 0;
 
     public Mario(String img) {
         texture = new Texture(Gdx.files.internal(img));
@@ -26,16 +34,59 @@ class Mario extends Actor {
                 TextureFilter.Linear);
         sprite = new Sprite(texture, 0, 0, 256, 256);
         sprite.setPosition(0, 0);
-        sprite.setSize(1, 1);
+        sprite.setSize(5, 5);
+        setSize(5, 5); //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> this line took me all day
         //setBounds(0, 0, 256, 256);
 
-        marioController = new MarioController(this);
-        addListener(marioController);
+        addListener(new MarioController(this));
+        addListener(new MarioActorGestureListener(this));
+
+        //setTouchable(Touchable.enabled);
+        //setVisible(true);
         //addCaptureListener(marioController);
-        audio = Gdx.audio;
-        jumpSound = audio.newSound(Gdx.files.internal("jump.mp3"));
-        hitSound = audio.newSound(Gdx.files.internal("hit.mp3"));
+        jumpSound = Gdx.audio.newSound(Gdx.files.internal("jump.mp3"));
+        hitSound = Gdx.audio.newSound(Gdx.files.internal("hit.mp3"));
     }    
+
+    static class MarioActorGestureListener extends ActorGestureListener {
+        private final Mario mario;
+
+        public MarioActorGestureListener(Mario m) {
+            mario = m;
+        } 
+
+        @Override
+        public void tap(InputEvent event, float x, float y, int pointer, int button) {
+            System.out.println("tap: "+event);
+        }
+
+        @Override
+        public void fling(InputEvent event, float dx, float dy, int button) {
+            System.out.println("fling: "+dx + ", " + dy);
+            if(dy > .1f) {
+                mario.jump();
+            }
+            if(dx > .1f) {
+                mario.direction = 1;
+            } 
+            if(dx < .1f) {
+                mario.direction = -1;
+            }
+        }
+
+        @Override
+        public boolean longPress (Actor actor, float x, float y) {
+            System.out.println("long press: "+x +", "+y);
+            return false;
+        }
+    }
+    /*
+    @Override
+    public boolean fire(Event e) {
+        System.out.println("fire: "+e);
+        return super.fire(e);
+    }
+    */
     public void moveTo(float x) {
         sprite.setX(x);
     }
@@ -64,9 +115,9 @@ class Mario extends Actor {
     public Body getBody() { return body; }
 
     @Override public void setPosition(float x, float y) {
+        super.setPosition(x, y);
         sprite.setPosition(x, y); //>>> remove it
     }
-
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
@@ -75,10 +126,23 @@ class Mario extends Actor {
 
     @Override 
     public void act(float deltaTime) {
-        marioController.update();
+        super.act(deltaTime);
+        if(direction > 0) moveRight();
+        else if(direction < 0) moveLeft();
     }
 
-    public void hit() {
+/*
+    @Override 
+    public Actor hit(float a, float b, boolean c) {
+        Actor actor = super.hit(a, b, c);
+        System.out.println(a+", "+b + " over "+getWidth()+", "+getHeight());
+        if(actor != null) System.out.println("hit "+actor);
+        return actor;
+
+    }
+ */
+
+    public void smack() {
         //System.out.println(speed);
         hitSound.play();
     }

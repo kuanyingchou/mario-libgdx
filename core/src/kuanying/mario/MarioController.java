@@ -1,3 +1,5 @@
+package kuanying.mario;
+
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
@@ -11,23 +13,20 @@ class MarioController extends InputListener {
     
     private Mario mario;
     //private Vector3 touchPos = new Vector3();
-    private int direction = 0;
 
     public MarioController(Mario m/*, Camera cam*/) {
         mario = m;
     }
 
     public void update() {
-        if(direction > 0) mario.moveRight();
-        else if(direction < 0) mario.moveLeft();
     }
 
+/*
     @Override
     public boolean handle(Event e) {
-        super.handle(e);
-        return false;
+        return super.handle(e);
     }
-
+*/
 /*
     public boolean touchDown(
             InputEvent event, float x, float y, 
@@ -43,10 +42,10 @@ class MarioController extends InputListener {
         System.out.println("key down: "+keycode);
         switch(keycode) {
         case Keys.LEFT:
-            direction--;
+            mario.direction--;
             break;
         case Keys.RIGHT:
-            direction++;
+            mario.direction++;
             break;
         case Keys.UP:
             mario.jump();
@@ -59,18 +58,25 @@ class MarioController extends InputListener {
     public boolean keyUp(InputEvent e, int keycode) {
         switch(keycode) {
         case Keys.LEFT:
-            direction++;
+            mario.direction++;
             break;
         case Keys.RIGHT:
-            direction--;
+            mario.direction--;
             break;
         }
         return true;
     }
     
+
+    /*
     @Override
     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
         System.out.println("touch down");
-        return true;
+        return false;
     }
+    @Override 
+    public boolean mouseMoved(InputEvent event, float x, float y) {
+        System.out.println(String.format("moving at %d, %d", x, y));
+    }
+    */
 }

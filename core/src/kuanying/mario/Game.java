@@ -1,3 +1,5 @@
+package kuanying.mario;
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -6,8 +8,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -35,21 +42,43 @@ public class Game implements ApplicationListener {
         stage = new Stage();
         stage.addActor(mario);
         stage.setKeyboardFocus(mario);
+        Gdx.input.setInputProcessor(stage);
 
+        createPhysicsWorld();
+/*
+        Actor a = new Actor();
+        a.addListener(new InputListener() {
+            public boolean handle(Event e) {
+                super.handle(e);
+                return false;
+            }
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                System.out.println(">>>>>>>>>>>>>>>>>>>>");
+                return false;
+            }
+        });
+        a.setBounds(0, 0, 10, 10);
+        stage.addActor(a);
+*/
+
+    }
+
+    private void createPhysicsWorld() {
         world = new World(new Vector2(0, -10), true);
         debugRenderer = new Box2DDebugRenderer();
 
         createPlayer();
         createPlatform();
-        for(int i=0; i<50; i++) {
-            final Body b = createBoxes();
-            b.setUserData("box "+i);
-        }
+        createBoxes();
 
         world.setContactListener(new MarioContactListener());
+    }
 
-        Gdx.input.setInputProcessor(stage);
-
+    private void createBoxes() {
+        for(int i=0; i<50; i++) {
+            final Body b = createBox();
+            b.setUserData("box "+i);
+        }
     }
 
     private void createPlayer() {
@@ -81,7 +110,7 @@ public class Game implements ApplicationListener {
         radarShape.dispose();
         mario.setBody(marioBody);
     }
-    private Body createBoxes() {
+    private Body createBox() {
         float x = MathUtils.random(5);
         float y = 10;
 
@@ -135,6 +164,7 @@ public class Game implements ApplicationListener {
         mario.setPosition(
                 marioBody.getPosition().x - .5f, 
                 marioBody.getPosition().y - .5f);
+
         //System.out.println(">>> "+marioBody.getPosition());
     }
     
@@ -143,7 +173,7 @@ public class Game implements ApplicationListener {
     public void resize (int width, int height) {
         //stage.setViewport(width / 256f, height / 256f);
         //stage.setViewport(width, height);
-        stage.setViewport(10, 10);
+        stage.setViewport(width / 100.0f, height / 100.0f);
         System.out.println("game resized");
     }
 

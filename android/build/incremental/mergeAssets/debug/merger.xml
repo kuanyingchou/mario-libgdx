@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger>
+
+    <dataSet config="main" >
+        <source path="/Users/ken/projects/mario-libgdx-android/android/assets" >
+            <file
+                name="badlogic.jpg"
+                path="/Users/ken/projects/mario-libgdx-android/android/assets/badlogic.jpg" />
+            <file
+                name="hit.mp3"
+                path="/Users/ken/projects/mario-libgdx-android/android/assets/hit.mp3" />
+            <file
+                name="jump.mp3"
+                path="/Users/ken/projects/mario-libgdx-android/android/assets/jump.mp3" />
+            <file
+                name="mario.png"
+                path="/Users/ken/projects/mario-libgdx-android/android/assets/mario.png" />
+        </source>
+    </dataSet>
+    <dataSet config="debug" >
+        <source path="/Users/ken/projects/mario-libgdx-android/android/src/debug/assets" />
+    </dataSet>
+
+</merger>

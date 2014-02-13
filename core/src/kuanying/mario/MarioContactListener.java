@@ -1,3 +1,5 @@
+package kuanying.mario;
+
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -11,7 +13,7 @@ class MarioContactListener implements ContactListener {
         //System.out.println(objs[0] + " hits "+ objs[1]);
         for(int i=0; i<2; i++) {
             if(objs[i] instanceof Mario) {
-                ((Mario)objs[i]).hit();
+                ((Mario)objs[i]).smack();
                 break;
             }
         }
