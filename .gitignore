@@ -3,3 +3,5 @@
 *.swp
 /bin
 .gradle
+/android/build
+/core/build

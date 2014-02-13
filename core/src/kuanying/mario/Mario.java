@@ -34,12 +34,12 @@ class Mario extends Actor {
                 TextureFilter.Linear);
         sprite = new Sprite(texture, 0, 0, 256, 256);
         sprite.setPosition(0, 0);
-        sprite.setSize(5, 5);
-        setSize(5, 5); //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> this line took me all day
+        sprite.setSize(1, 1);
+        setSize(1, 1); //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> this line took me all day
         //setBounds(0, 0, 256, 256);
 
         addListener(new MarioController(this));
-        addListener(new MarioActorGestureListener(this));
+        //addListener(new MarioActorGestureListener(this));
 
         //setTouchable(Touchable.enabled);
         //setVisible(true);

@@ -10,6 +10,8 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.input.GestureDetector.GestureAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -42,7 +44,25 @@ public class Game implements ApplicationListener {
         stage = new Stage();
         stage.addActor(mario);
         stage.setKeyboardFocus(mario);
-        Gdx.input.setInputProcessor(stage);
+        Gdx.input.setInputProcessor(new InputMultiplexer(
+            stage,
+            new GestureDetector(new GestureAdapter() {
+                @Override
+                public boolean fling(float dx, float dy, int button) {
+                    System.out.println("fling: "+dx + ", " + dy);
+                    if(dy < -1000f) {
+                        mario.jump();
+                    }
+                    if(dx > 1000f) {
+                        mario.direction = 1;
+                    } 
+                    if(dx < 1000f) {
+                        mario.direction = -1;
+                    }
+                    return true;
+                }
+            
+        })));
 
         createPhysicsWorld();
 /*
