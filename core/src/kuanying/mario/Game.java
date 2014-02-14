@@ -27,6 +27,20 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 
 public class Game implements ApplicationListener {
     private Mario mario;
@@ -39,13 +53,21 @@ public class Game implements ApplicationListener {
     @Override
     public void create () {
         System.out.println("game created");
+        init();
+    }
+
+    private void init() {
         mario = new Mario("mario.png");
+        mario.setZIndex(0);
 
         stage = new Stage();
+        uiStage = new Stage();
+        
         stage.addActor(mario);
         stage.setKeyboardFocus(mario);
         Gdx.input.setInputProcessor(new InputMultiplexer(
             stage,
+            uiStage,
             new GestureDetector(new GestureAdapter() {
                 @Override
                 public boolean fling(float dx, float dy, int button) {
@@ -65,6 +87,7 @@ public class Game implements ApplicationListener {
         })));
 
         createPhysicsWorld();
+        createUI();
 /*
         Actor a = new Actor();
         a.addListener(new InputListener() {
@@ -80,7 +103,63 @@ public class Game implements ApplicationListener {
         a.setBounds(0, 0, 10, 10);
         stage.addActor(a);
 */
+        setViewport(512, 512);
+    }
 
+    private Stage uiStage;
+    private Table table;
+
+    private void createUI() {
+
+        final Skin skin = new Skin();
+
+        // Generate a 1x1 white texture and store it in the skin named "white".
+        Pixmap pixmap = new Pixmap(1, 1, Format.RGBA8888);
+        pixmap.setColor(Color.WHITE);
+        pixmap.fill();
+        skin.add("white", new Texture(pixmap));
+
+        // Store the default libgdx font under the name "default".
+        skin.add("default", new BitmapFont());
+
+        // Configure a TextButtonStyle and name it "default". Skin resources are stored by type, so this doesn't overwrite the font.
+        TextButtonStyle textButtonStyle = new TextButtonStyle();
+        textButtonStyle.up = skin.newDrawable("white", Color.DARK_GRAY);
+        textButtonStyle.down = skin.newDrawable("white", Color.DARK_GRAY);
+        textButtonStyle.checked = skin.newDrawable("white", Color.BLUE);
+        textButtonStyle.over = skin.newDrawable("white", Color.LIGHT_GRAY);
+        textButtonStyle.font = skin.getFont("default");
+        skin.add("default", textButtonStyle);
+
+        // Create a table that fills the screen. Everything else will go inside this table.
+        //
+        // Create a button with the "default" TextButtonStyle. A 3rd parameter can be used to specify a name other than "default".
+        final TextButton button = new TextButton("Reload", skin);
+        //button.setZIndex(2);
+
+        final HorizontalGroup g = new HorizontalGroup();
+        g.setAlignment(Align.left);
+        g.addActor(button);
+
+        Table table = new Table();
+        table.setZIndex(1);
+        table.align(Align.top);
+        table.setFillParent(true);
+        table.add(g);
+
+        uiStage.addActor(table);
+
+
+        // Add a listener to the button. ChangeListener is fired when the button's checked state changes, eg when clicked,
+        // Button#setChecked() is called, via a key press, etc. If the event.cancel() is called, the checked state will be reverted.
+        // ClickListener could have been used, but would only fire when clicked. Also, canceling a ClickListener event won't
+        // revert the checked state.
+        button.addListener(new ChangeListener() {
+            public void changed (ChangeEvent event, Actor actor) {
+                destroy();
+                init();
+            }
+        });
     }
 
     private void createPhysicsWorld() {
@@ -115,8 +194,8 @@ public class Game implements ApplicationListener {
         final FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1;
-        fixtureDef.friction = .5f;
-        fixtureDef.restitution = .2f;
+        fixtureDef.friction = .2f;
+        fixtureDef.restitution = .5f;
 
         final PolygonShape radarShape = new PolygonShape();
         radarShape.setAsBox(1f, 1f);
@@ -178,6 +257,9 @@ public class Game implements ApplicationListener {
         clear();
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
+        uiStage.draw();
+
+        table.drawDebug(uiStage);
 
         debugRenderer.render(world, stage.getCamera().combined);
         world.step(1/60f, 6, 2);
@@ -186,14 +268,20 @@ public class Game implements ApplicationListener {
                 marioBody.getPosition().y - .5f);
         mario.setRotation(marioBody.getTransform().getRotation() * MathUtils.radDeg);
         //System.out.println(">>> "+mario.getRotation());
+
     }
     
 
     @Override
     public void resize (int width, int height) {
-        //stage.setViewport(width / 256f, height / 256f);
-        //stage.setViewport(width, height);
-        stage.setViewport(width / 100.0f, height / 100.0f);
+        setViewport(width, height);
+    }
+
+    private void setViewport(int sw, int sh) {
+        //stage.setViewport(sw / 256f, sh / 256f);
+        //stage.setViewport(sw, sh);
+        stage.setViewport(sw / 100.0f, sh / 100.0f);
+        uiStage.setViewport(512, 512);
         System.out.println("game resized");
     }
 
@@ -209,6 +297,13 @@ public class Game implements ApplicationListener {
 
     @Override
     public void dispose () {
+        destroy();
+    }
+
+    private void destroy() {
+        mario.dispose();
         stage.dispose();
+        uiStage.dispose();
+        world.dispose();
     }
 }

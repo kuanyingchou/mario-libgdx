@@ -104,7 +104,7 @@ class Mario extends Image {
         //if(pos.y < .6f) {
             body.applyLinearImpulse(0, 5f, pos.x, pos.y, true);
         //}
-        jumpSound.play();
+        jumpSound.play(.2f);
     }
     public void setBody(Body b) { body = b; }
     public Body getBody() { return body; }
@@ -140,7 +140,7 @@ class Mario extends Image {
 
     public void smack() {
         //System.out.println(speed);
-        hitSound.play();
+        hitSound.play(.2f);
     }
 
     public void dispose() {
