@@ -16,19 +16,39 @@ import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Event;
+//import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.esotericsoftware.spine.Animation;
+import com.esotericsoftware.spine.Skeleton;
+import com.esotericsoftware.spine.SkeletonData;
+import com.esotericsoftware.spine.SkeletonRenderer;
+import com.esotericsoftware.spine.SkeletonJson;
+import com.esotericsoftware.spine.Event;
+import com.esotericsoftware.spine.Bone;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.math.MathUtils;
 
-class Mario extends Image {
+class Mario extends Actor {
     private Body body;
     private Sound jumpSound;
     private Sound hitSound;
     public int direction = 0;
 
+    private Animation animation;
+    private Skeleton skeleton;
+    private SkeletonData skeletonData;
+    private SkeletonRenderer renderer;
+    private Array<Event> events = new Array();
+    private float time;
+    private Bone root;
+
     public Mario(String img) {
-        super(new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(img)))));
+        //super(new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(img)))));
         setSize(1, 1); //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> this line took me all day while implementing gesture input
         setOrigin(.5f, .5f);
         //setBounds(0, 0, 256, 256);
@@ -41,7 +61,27 @@ class Mario extends Image {
         //addCaptureListener(marioController);
         jumpSound = Gdx.audio.newSound(Gdx.files.internal("jump.mp3"));
         hitSound = Gdx.audio.newSound(Gdx.files.internal("hit.mp3"));
+
+        initSpine();
     }    
+
+    
+    private void initSpine() {
+        final FileHandle atlasFile = Gdx.files.internal("spineboy.atlas");
+        final TextureAtlasData data = !atlasFile.exists() ? null : new TextureAtlasData(atlasFile, atlasFile.parent(), false);
+        final TextureAtlas atlas = new TextureAtlas(data);
+        final SkeletonJson json = new SkeletonJson(atlas);
+        json.setScale(.005f);
+        skeletonData = json.readSkeletonData(Gdx.files.internal("spineboy.json"));
+        animation = skeletonData.findAnimation("walk");
+
+        skeleton = new Skeleton(skeletonData);
+        skeleton = new Skeleton(skeleton);
+        skeleton.updateWorldTransform();
+        
+        renderer = new SkeletonRenderer();
+        root = skeleton.findBone("root");
+    }
 
     static class MarioActorGestureListener extends ActorGestureListener {
         private final Mario mario;
@@ -112,6 +152,14 @@ class Mario extends Image {
     @Override public void setPosition(float x, float y) {
         super.setPosition(x, y);
         //sprite.setPosition(x, y); //>>> remove it
+        skeleton.setX(x+.5f);
+        skeleton.setY(y+.5f);
+    }
+    @Override public void setRotation(float deg) {
+        super.setRotation(deg);
+        //skeleton.setRotation(deg);
+        root.getData().setRotation(deg);
+        //skeleton.updateWorldTransform();
     }
 
 /*
@@ -137,6 +185,31 @@ class Mario extends Image {
 
     }
  */
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        float lastTime = time;
+        time += Gdx.graphics.getDeltaTime();
+
+/*
+        float x = skeleton.getX() + 160 * Gdx.graphics.getDeltaTime() * (skeleton.getFlipX() ? -1 : 1);
+        if (x > Gdx.graphics.getWidth()) skeleton.setFlipX(true);
+        if (x < 0) skeleton.setFlipX(false);
+        skeleton.setX(x);
+        skeleton.setX(300);
+        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+*/
+
+        events.clear();
+        animation.apply(skeleton, lastTime, time, true, events);
+        if (events.size > 0) System.out.println(events);
+
+        skeleton.updateWorldTransform();
+        skeleton.update(Gdx.graphics.getDeltaTime());
+
+        //batch.begin();
+        renderer.draw(batch, skeleton);
+        //batch.end();
+    }
 
     public void smack() {
         //System.out.println(speed);

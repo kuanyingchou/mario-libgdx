@@ -1,6 +1,6 @@
 # A simple game made with libgdx.
 ## Todo
-- gestures
+- gestures > swipe on actor
 - ray casts
 - image sequence animation
 - multiple scenes
